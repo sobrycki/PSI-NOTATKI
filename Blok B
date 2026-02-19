@@ -1,0 +1,12 @@
+/zad 5
+system_nagrod = function(los) {
+  los = sample(1:6, 1)
+  if (los == 6) {
+    return("Super Bonus!")
+  } else if ( los > 3) {
+    return("Nagroda standardowa")
+  } else {
+    return("Brak nagrody...")
+  }
+}
+system_nagrod()
