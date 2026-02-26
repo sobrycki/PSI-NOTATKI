@@ -1,17 +1,25 @@
-# PrawidÅ‚owy import plikÃ³w CSV z folderu - wykonaj:
+
+
+# IMPORT ------------------------------------------------------------------
+
+
+# Prawid³owy import plików CSV z folderu - wykonaj:
 kraje_1 = read.table("kraje_makro_1.csv", header=TRUE, sep=",", dec=".")
 kraje_2 = read.table("kraje_makro_2.csv", header=TRUE, sep=",", dec=".")
 
-# PAKIETY W R - rozszerzenie moÅ¼liwoÅ›ci
-# Åšrodowisko programistyczne R opiera swoje potÄ™Å¼ne moÅ¼liwoÅ›ci na doÅ‚Ä…czaniu rÃ³Å¼nych dodatkowych funkcji
-# czyli pakietÃ³w (packages) rozwijanych przez programistÃ³w na caÅ‚ym Å›wiecie.
+# PAKIETY W R - rozszerzenie mo¿liwoœci
+# Œrodowisko programistyczne R opiera swoje potê¿ne mo¿liwoœci na do³¹czaniu ró¿nych dodatkowych funkcji
+# czyli pakietów (packages) rozwijanych przez programistów na ca³ym œwiecie.
 
-# Funkcja install.packages() sÅ‚uÅ¼y do jednorazowej instalacji wybranego pakietu, np.:
-#install.packages("readxl") 	# uruchom linijkÄ™, a potem jÄ… zakomentuj
-# Funkcja library()wczytuje wybrany pakiet, aby mÃ³c z niego korzystaÄ‡, np.:
-library(readxl)
+# Funkcja install.packages() s³u¿y do jednorazowej instalacji wybranego pakietu, np.:
+#install.packages("readxl") 	# uruchom linijkê, a potem j¹ zakomentuj
+# Funkcja library()wczytuje wybrany pakiet, aby móc z niego korzystaæ, np.:
+#library(readxl)
 
-# PodglÄ…d danych ----
+# PRZYGOTOWANIE DANYCH ----------------------------------------------------
+
+
+# Podgl¹d danych ----
 
 # Pierwsze/ostatnie wiersze
 head(kraje_1)	# pierwsze 6 wierszy (obserwacji)
@@ -25,19 +33,19 @@ tail(kraje_2, 5)
 
 
 # Podstawowe statystyki wszystkich kolumn (zmiennych)
-summary(kraje_1)	# min, max, Å›rednia, mediana, kwantyle
+summary(kraje_1)	# min, max, œrednia, mediana, kwantyle
 summary(kraje_2)
 
 # Statystyki pojedynczej kolumny (zmiennej)
-mean(kraje_1$Przyrost_populacji)		# Å›rednia
+mean(kraje_1$Przyrost_populacji)		# œrednia
 median(kraje_1$Przyrost_populacji)	# mediana
 min(kraje_1$Przyrost_populacji)		# minimum
 max(kraje_1$Przyrost_populacji)		# maksimum
 
 
-# PorzÄ…dkowanie nazw kolumn (zmiennych) ----
+# Porz¹dkowanie nazw kolumn (zmiennych) ----
 
-# Usuwanie zbÄ™dnej kolumny
+# Usuwanie zbêdnej kolumny
 kraje_1$X = NULL
 kraje_2$X = NULL
 
@@ -45,87 +53,90 @@ kraje_2$X = NULL
 colnames(kraje_2) = c("Kod_kraju", "Nazwa", "Region", "Urbanizacja_proc.", "Internet_proc.")
 
 
-# PorzÄ…dkowanie typÃ³w danych ----
+# Porz¹dkowanie typów danych ----
 
-# W ramce danych kraje_2 sprawdÅº typ zmiennej Region 
+# W ramce danych kraje_2 sprawdŸ typ zmiennej Region 
 is.numeric(kraje_2$Region) 	# czy zmienna jest liczbowa? Odp. Nie.
 is.character(kraje_2$Region) 	# czy zmienna jest tekstowa? Odp. Tak.
 
-# Region to zmienna kategorialna, wiÄ™c nadajemy jej typ factor:
+# Region to zmienna kategorialna, wiêc nadajemy jej typ factor:
 kraje_2$Region = as.factor(kraje_2$Region)
 
 # Sprawdzenie kategorii:
 summary(kraje_2)
 levels(kraje_2$Region)
 
-# Teraz widaÄ‡, Å¼e jest 7 kategorii regionÃ³w, na ktÃ³rych operuje zmienna Region.
+# Teraz widaæ, ¿e jest 7 kategorii regionów, na których operuje zmienna Region.
 
 
-# PorzÄ…dkowanie brakÃ³w danych ----
+# Porz¹dkowanie braków danych ----
 
-# Szybka kontrola brakÃ³w danych we wszystkich kolumnach:
-colSums(is.na(kraje_1))	# nie ma brakÃ³w danych
-colSums(is.na(kraje_2))	# sÄ… 4 braki danych w kolumnie (zmiennej) Internet_proc.
+# Szybka kontrola braków danych we wszystkich kolumnach:
+colSums(is.na(kraje_1))	# nie ma braków danych
+colSums(is.na(kraje_2))	# s¹ 4 braki danych w kolumnie (zmiennej) Internet_proc.
 
-# Liczba brakÃ³w w konkretnej kolumnie:
+# Liczba braków w konkretnej kolumnie:
 sum(is.na(kraje_2$Internet_proc.)) 	# 4 braki
 
 
-# Zobaczmy te 4 wiersze, w ktÃ³rych brakuje wartoÅ›ci:
+# Zobaczmy te 4 wiersze, w których brakuje wartoœci:
 kraje_2[is.na(kraje_2$Internet_proc.), ]
 
 
-# Braki danych sÄ… czÄ™Å›ciÄ… rzeczywistoÅ›ci ekonomisty, dlatego trzeba umieÄ‡ je obsÅ‚uÅ¼yÄ‡ i # podjÄ…Ä‡ decyzjÄ™ analitycznÄ…:
-# OPCJA 1 - PozostawiÄ‡ (teraz tak postÄ…pimy)
-# OPCJA 2 - UsunÄ…Ä‡ obserwacje z brakami (czy usuniÄ™cie tych obserwacji zmieni analizÄ™?)
-# OPCJA 3 - UzupeÅ‚niÄ‡ braki (np. imputacja medianÄ…)
+# Braki danych s¹ czêœci¹ rzeczywistoœci ekonomisty, dlatego trzeba umieæ je obs³u¿yæ i # podj¹æ decyzjê analityczn¹:
+# OPCJA 1 - Pozostawiæ (teraz tak post¹pimy)
+# OPCJA 2 - Usun¹æ obserwacje z brakami (czy usuniêcie tych obserwacji zmieni analizê?)
+# OPCJA 3 - Uzupe³niæ braki (np. imputacja median¹)
 
 # Czyszczenie danych ----
-# W ramce danych kraje_2, w kolumnie Region sÄ… kategorie, w ktÃ³rych nazwie jest znak &:
+# W ramce danych kraje_2, w kolumnie Region s¹ kategorie, w których nazwie jest znak &:
 levels(kraje_2$Region)
 # [1] "East Asia & Pacific"       "Europe & Central Asia"    
 # [3] "Latin America & Caribbean" "Middle East & North Africa"
 # [5] "North America"             "South Asia"               
 # [7] "Sub-Saharan Africa"
-# Znak & bywa problematyczny przy dalszym przetwarzaniu, dlatego zastÄ…p go sÅ‚ownym spÃ³jnikiem "and".
-# Funkcja gsub() dziaÅ‚a jak "ZnajdÅº i zamieÅ„" (Ctrl+H) w Excelu. 
-# Zamienia wszystkie wystÄ…pienia tekstu na inny tekst
-# PrzykÅ‚adowo: gsub("stary_tekst", "nowy_tekst", ramka$kolumna)
+# Znak & bywa problematyczny przy dalszym przetwarzaniu, dlatego zast¹p go s³ownym spójnikiem "and".
+# Funkcja gsub() dzia³a jak "ZnajdŸ i zamieñ" (Ctrl+H) w Excelu. 
+# Zamienia wszystkie wyst¹pienia tekstu na inny tekst
+# Przyk³adowo: gsub("stary_tekst", "nowy_tekst", ramka$kolumna)
 
-# W naszym przypadku wykonamy nastÄ™pujÄ…cy kod:
+# W naszym przypadku wykonamy nastêpuj¹cy kod:
 kraje_2$Region <- gsub("&", "and", kraje_2$Region)
 
 # Sprawdzenie (po zamianie ponownie ustawiamy typ factor):
 kraje_2$Region = as.factor(kraje_2$Region)
 levels(kraje_2$Region)
-# Funkcja merge() Å‚Ä…czy dwie ramki danych/tabele po wspÃ³lnej kolumnie (kluczu) - dziaÅ‚a analogicznie jak 
+# Funkcja merge() ³¹czy dwie ramki danych/tabele po wspólnej kolumnie (kluczu) - dzia³a analogicznie jak 
 # WYSZUKAJ.PIONOWO w Excelu
 
-# PrzykÅ‚adowo: merge(ramka1, ramka2, by.x="kolumna1", by.y="kolumna2")
+# Przyk³adowo: merge(ramka1, ramka2, by.x="kolumna1", by.y="kolumna2")
 
-#   ÅÄ…czenie (scalanie) ramek danych kraje_1 i kraje_2
+#   £¹czenie (scalanie) ramek danych kraje_1 i kraje_2
 kraje = merge(kraje_1, kraje_2, by.x="Kod", by.y="Kod_kraju")
 
 
-# Usuwanie zbÄ™dnej kolumny po poÅ‚Ä…czeniu
+# Usuwanie zbêdnej kolumny po po³¹czeniu
 kraje$Nazwa = NULL
 
 
-# Zobacz ramkÄ™ danych po scaleniu
+# Zobacz ramkê danych po scaleniu
 summary(kraje)
 str(kraje)
 
 
-# NajczÄ™Å›ciej uÅ¼ywane funkcje pakietu dplyr: ----
-# mutate() - tworzenie nowych zmiennych na bazie istniejÄ…cych
-# filter() â€“ wybieranie wierszy speÅ‚niajÄ…cych okreÅ›lone warunki
-# select() â€“ wybieranie kolumn
+# Najczêœciej u¿ywane funkcje pakietu dplyr: ----
+# mutate() - tworzenie nowych zmiennych na bazie istniej¹cych
+# filter() – wybieranie wierszy spe³niaj¹cych okreœlone warunki
+# select() – wybieranie kolumn
 # arrange() - sortowanie
 # group_by() - grupowanie
-# summarise() â€“ obliczanie wartoÅ›ci zagregowanych (np. Å›rednich, sum)
+# summarise() – obliczanie wartoœci zagregowanych (np. œrednich, sum)
 
 
-# mutate() â€“ tworzenie nowych zmiennych na bazie istniejÄ…cych ----
+# mutate() – tworzenie nowych zmiennych na bazie istniej¹cych ----
+
+# PODSTAWOWA ANALIZA DANYCH -----------------------------------------------
+
 
 library(dplyr)
 
@@ -134,11 +145,11 @@ library(dplyr)
 kraje = kraje %>%
   mutate(Populacja_mln = Populacja / 1e6)
 
-# RÃ³wnowaÅ¼ny kod w base R:
+# Równowa¿ny kod w base R:
 kraje$Populacja_mln = kraje$Populacja / 1e6
 
 
-# 1e6 to zapis miliona w R (1 razy 10 do potÄ™gi 6)
+# 1e6 to zapis miliona w R (1 razy 10 do potêgi 6)
 # 1e9  = 1 000 000 000 (miliard)
 # 1e12 = 1 000 000 000 000 (bilion)
 
@@ -147,53 +158,53 @@ kraje$Populacja_mln = kraje$Populacja / 1e6
 kraje = kraje %>%
   mutate(PKB_per_capita = PKB / Populacja)
 
-# RÃ³wnowaÅ¼ny kod w base R:
+# Równowa¿ny kod w base R:
 kraje$PKB_per_capita = kraje$PKB / kraje$Populacja
 
 
-# filter() â€“ wybieranie wierszy ----
-# select() â€“ wybieranie kolumn ----
+# filter() – wybieranie wierszy ----
+# select() – wybieranie kolumn ----
 
-# WyÅ›wietl kraje, w ktÃ³rych % poziom urbanizacji jest wiÄ™kszy niÅ¼ 50
+# Wyœwietl kraje, w których % poziom urbanizacji jest wiêkszy ni¿ 50
 kraje %>%
   filter(Urbanizacja_proc. > 50)
 
-# RÃ³wnowaÅ¼ny kod w base R:
+# Równowa¿ny kod w base R:
 kraje[kraje$Urbanizacja_proc. > 50, ]
 
 
-# WyÅ›wietl tylko dane pokazujÄ…ce zmienne Panstwo, Region, PKB, Populacja_mln
+# Wyœwietl tylko dane pokazuj¹ce zmienne Panstwo, Region, PKB, Populacja_mln
 kraje %>%
   select(Panstwo, Region, PKB, Populacja_mln)
 
-# RÃ³wnowaÅ¼ny kod w base R:
+# Równowa¿ny kod w base R:
 kraje[, c("Panstwo", "Region", "PKB", "Populacja_mln")]
 
-# arrange() â€“ sortowanie ----
+# arrange() – sortowanie ----
 
-# Posortuj kraje wedÅ‚ug przyrostu populacji rosnÄ…co
+# Posortuj kraje wed³ug przyrostu populacji rosn¹co
 kraje %>%
   arrange(Przyrost_populacji)
 
 
-# Posortuj kraje wedÅ‚ug przyrostu populacji malejÄ…co
+# Posortuj kraje wed³ug przyrostu populacji malej¹co
 kraje %>%
   arrange(desc(Przyrost_populacji))
 
-# RÃ³wnowaÅ¼ny kod w base R:
-kraje[order(kraje$Przyrost_populacji), ]  # rosnÄ…co
-kraje[order(kraje$Przyrost_populacji, decreasing = TRUE), ]  # malejÄ…co
+# Równowa¿ny kod w base R:
+kraje[order(kraje$Przyrost_populacji), ]  # rosn¹co
+kraje[order(kraje$Przyrost_populacji, decreasing = TRUE), ]  # malej¹co
 
 
-# Wybierz kraje z PKB wiÄ™kszym niÅ¼ 1 bilion, posortuj je rosnÄ…co wzglÄ™dem PKB 
-# i wyÅ›wietl nazwÄ™ paÅ„stwa, PKB i PKB per capita. Ile jest takich krajÃ³w?
+# Wybierz kraje z PKB wiêkszym ni¿ 1 bilion, posortuj je rosn¹co wzglêdem PKB 
+# i wyœwietl nazwê pañstwa, PKB i PKB per capita. Ile jest takich krajów?
 kraje %>%
   filter(PKB > 1e12) %>%
   arrange(PKB) %>%
   select(Panstwo, PKB, PKB_per_capita)
 
 
-# RÃ³wnowaÅ¼ny kod w base R:
+# Równowa¿ny kod w base R:
 
 # Krok 1: Filtrowanie
 kraje_filtr = kraje[kraje$PKB > 1e12, ]
@@ -201,7 +212,7 @@ kraje_filtr = kraje[kraje$PKB > 1e12, ]
 # Krok 2: Sortowanie
 kraje_sort = kraje_filtr[order(kraje_filtr$PKB), ]
 
-# Krok 3: WybÃ³r kolumn
+# Krok 3: Wybór kolumn
 kraje_sort[, c("Panstwo", "PKB", "PKB_per_capita")]
 
 # Wniosek: dplyr jest bardziej czytelny przy wielu operacjach.
@@ -210,94 +221,94 @@ kraje_sort[, c("Panstwo", "PKB", "PKB_per_capita")]
 
 # Wybierz kraje z regionu Afryki Subsaharyjskiej, 
 # wybierz zmienne Panstwo, PKB_per_capita, Populacja_mln, Urbanizacja,
-# a nastÄ™pnie posortuj malejÄ…co po PKB per capita
+# a nastêpnie posortuj malej¹co po PKB per capita
 kraje %>%
   filter(Region == "Sub-Saharan Africa") %>%
   select(Panstwo, PKB_per_capita, Populacja_mln, Urbanizacja_proc.) %>%
   arrange(desc(PKB_per_capita))
 
 
-# RÃ³wnowaÅ¼ny kod w base R:
-# Krok 1: Filtrowanie i wybÃ³r kolumn
+# Równowa¿ny kod w base R:
+# Krok 1: Filtrowanie i wybór kolumn
 kraje_reg = kraje[kraje$Region == "Sub-Saharan Africa", c("Panstwo", "PKB_per_capita", "Populacja_mln", "Urbanizacja_proc.")]
 
 # Krok 2: Sortowanie
 kraje_reg[order(kraje_reg$PKB_per_capita, decreasing = TRUE), ]
 
 
-# group_by() â€“ grupowanie ----
-# summarise() - obliczanie wartoÅ›ci zagregowanych (np. Å›rednich, sum) ----
+# group_by() – grupowanie ----
+# summarise() - obliczanie wartoœci zagregowanych (np. œrednich, sum) ----
 
-# WyÅ›wietl tylko te kraje, ktÃ³re sÄ… bogatsze niÅ¼ Å›rednia regionu
+# Wyœwietl tylko te kraje, które s¹ bogatsze ni¿ œrednia regionu
 bogate = kraje %>%
   group_by(Region) %>%
   filter(PKB_per_capita > mean(PKB_per_capita, na.rm = TRUE))
 
 
 
-# RÃ³wnowaÅ¼ny kod w base R:
+# Równowa¿ny kod w base R:
 
 bogate = kraje[kraje$PKB_per_capita > ave(kraje$PKB_per_capita, kraje$Region, 
                                           FUN = mean, na.rm = TRUE), ]
 
-# ave() liczy Å›redniÄ… wewnÄ…trz grup i zwraca wektor tej samej dÅ‚ugoÅ›ci co dane.
+# ave() liczy œredni¹ wewn¹trz grup i zwraca wektor tej samej d³ugoœci co dane.
 
 
 
-# ZnajdÅº najwiÄ™kszÄ… wartoÅ›Ä‡ PKB per capita w caÅ‚ym zbiorze krajÃ³w
+# ZnajdŸ najwiêksz¹ wartoœæ PKB per capita w ca³ym zbiorze krajów
 kraje %>%
   summarise(max_PKB_per_capita = max(PKB_per_capita, na.rm = TRUE))
 
 
-# RÃ³wnowaÅ¼ny kod w base R:
+# Równowa¿ny kod w base R:
 
 max(kraje$PKB_per_capita, na.rm = TRUE)
 
 
 
-# ZnajdÅº najwiÄ™kszÄ… i najmniejszÄ… wartoÅ›Ä‡ Populacji w mln w caÅ‚ym zbiorze krajÃ³w
+# ZnajdŸ najwiêksz¹ i najmniejsz¹ wartoœæ Populacji w mln w ca³ym zbiorze krajów
 kraje %>%
   summarise(
     min_populacja = min(Populacja_mln, na.rm = TRUE),
     max_populacja = max(Populacja_mln, na.rm = TRUE))
 
 
-# RÃ³wnowaÅ¼ny kod w base R:
+# Równowa¿ny kod w base R:
 min(kraje$Populacja_mln, na.rm = TRUE)
 max(kraje$Populacja_mln, na.rm = TRUE)
 
 
-# Oblicz Å›redniÄ… populacjÄ™ w caÅ‚ym zbiorze krajÃ³w (jedna liczba dla caÅ‚ej ramki)
+# Oblicz œredni¹ populacjê w ca³ym zbiorze krajów (jedna liczba dla ca³ej ramki)
 kraje %>%
   summarise(srednia_populacja = mean(Populacja_mln, na.rm = TRUE))
 
-# RÃ³wnowaÅ¼ny kod w base R:
+# Równowa¿ny kod w base R:
 mean(kraje$Populacja_mln, na.rm = TRUE)
 
-# Ile krajÃ³w jest w caÅ‚ym zbiorze danych?
+# Ile krajów jest w ca³ym zbiorze danych?
 kraje %>%
   summarise(liczba_krajow = n())
 
 
-# RÃ³wnowaÅ¼ny kod w base R:
+# Równowa¿ny kod w base R:
 
 nrow(kraje)
 
 
 
-# Policz, ile krajÃ³w jest w kaÅ¼dym regionie
+# Policz, ile krajów jest w ka¿dym regionie
 kraje %>%
   group_by(Region) %>%
   summarise(liczba_krajow = n())
 
 
-# RÃ³wnowaÅ¼ny kod w base R:
+# Równowa¿ny kod w base R:
 
 table(kraje$Region)
 
 
 
-# Dla kaÅ¼dego regionu Å›wiata: oblicz liczbÄ™ krajÃ³w (n), Å›redni % dostÄ™p do internetu i Å›redni % poziom urbanizacji, a nastÄ™pnie posortuj regiony malejÄ…co wg Å›redniego % dostÄ™pu do internetu
+# Dla ka¿dego regionu œwiata: oblicz liczbê krajów (n), œredni % dostêp do internetu i œredni % poziom urbanizacji, a nastêpnie posortuj regiony malej¹co wg œredniego % dostêpu do internetu
 kraje %>%
   group_by(Region) %>%
   summarise(
@@ -308,7 +319,7 @@ kraje %>%
   arrange(desc(sredni_internet))
 
 
-# RÃ³wnowaÅ¼ny kod w base R:
+# Równowa¿ny kod w base R:
 {
   wynik = aggregate(cbind(Internet_proc., Urbanizacja_proc.) ~ Region,
                     kraje, mean, na.rm = TRUE)
@@ -318,11 +329,14 @@ kraje %>%
   }
 
 
+# WIZUALIZACJA DANYCH -----------------------------------------------------
+
+
 # UWAGA!
-# Wszystkie zaprezentowane dziaÅ‚ania da siÄ™ zrobiÄ‡ w base R (czystym R bez pakietÃ³w), 
-# ale w wielu przykÅ‚adach uÅ¼ycie funkcji z pakietu dplyr jest bardziej czytelne i szybsze.
-# PosÅ‚uguj siÄ™ takim kodem, ktÃ³ry jest dla Ciebie zrozumiaÅ‚y.
-# Wizualizacja danych takÅ¼e pozwala zidentyfikowaÄ‡ wzorce i zaleÅ¼noÅ›ci w zbiorze danych.
+# Wszystkie zaprezentowane dzia³ania da siê zrobiæ w base R (czystym R bez pakietów), 
+# ale w wielu przyk³adach u¿ycie funkcji z pakietu dplyr jest bardziej czytelne i szybsze.
+# Pos³uguj siê takim kodem, który jest dla Ciebie zrozumia³y.
+# Wizualizacja danych tak¿e pozwala zidentyfikowaæ wzorce i zale¿noœci w zbiorze danych.
 
 # install.packages("ggplot2")
 library(ggplot2)
@@ -345,10 +359,10 @@ ggplot(kraje, aes(x = Urbanizacja_proc., y = PKB_per_capita, color = Region)) +
   scale_y_log10(labels = scales::comma) +
   labs(
     title = "Urbanizacja a PKB per capita",
-    subtitle = "Czy bardziej zurbanizowane kraje sÄ… bogatsze?",
-    x = "Urbanizacja (% ludnoÅ›ci miejskiej)",
+    subtitle = "Czy bardziej zurbanizowane kraje s¹ bogatsze?",
+    x = "Urbanizacja (% ludnoœci miejskiej)",
     y = "PKB per capita (USD, skala log)",
-    color = "Region Å›wiata"
+    color = "Region œwiata"
   ) +
   theme_minimal() +
   theme(
@@ -373,13 +387,13 @@ ggplot(kraje, aes(x = Populacja_mln, y = PKB, size = PKB_per_capita, color = Reg
 
 
 
-# 4. Prosty wykres sÅ‚upkowy: liczba krajÃ³w w regionach ----
+# 4. Prosty wykres s³upkowy: liczba krajów w regionach ----
 ggplot(kraje, aes(x = Region)) +
   geom_bar(fill = "steelblue", color = "white") +
   labs(
-    title = "Liczba krajÃ³w w regionach Å›wiata",
+    title = "Liczba krajów w regionach œwiata",
     x = "Region",
-    y = "Liczba krajÃ³w"
+    y = "Liczba krajów"
   ) +
   theme_minimal() +
   theme(
@@ -387,7 +401,7 @@ ggplot(kraje, aes(x = Region)) +
     plot.title = element_text(hjust = 0.5))
 
 
-# 5. Zaawansowany wykres sÅ‚upkowy poziomy: TOP 15 najbogatszych krajÃ³w ----
+# 5. Zaawansowany wykres s³upkowy poziomy: TOP 15 najbogatszych krajów ----
 kraje %>%
   arrange(desc(PKB_per_capita)) %>%
   head(15) %>%
@@ -396,7 +410,7 @@ kraje %>%
   coord_flip() +
   scale_y_continuous(labels = scales::comma) +
   labs(
-    title = "TOP 15 najbogatszych krajÃ³w Å›wiata (2016)",
+    title = "TOP 15 najbogatszych krajów œwiata (2016)",
     subtitle = "PKB per capita w USD",
     x = NULL,
     y = "PKB per capita (USD)",
@@ -408,39 +422,43 @@ kraje %>%
     axis.text.y = element_text(size = 10))
 
 
-# 6. Wykres pudeÅ‚kowy (boxplot): dostÄ™p do internetu wedÅ‚ug regionÃ³w ----
+# 6. Wykres pude³kowy (boxplot): dostêp do internetu wed³ug regionów ----
 ggplot(kraje, aes(x = reorder(Region, Internet_proc., FUN = median), 
                   y = Internet_proc., fill = Region)) +
   geom_boxplot(alpha = 0.7) +
   geom_jitter(width = 0.2, alpha = 0.3, size = 1) +
   coord_flip() +
   labs(
-    title = "DostÄ™p do internetu wedÅ‚ug regionÃ³w Å›wiata",
-    subtitle = "(punkty to poszczegÃ³lne kraje)",
+    title = "Dostêp do internetu wed³ug regionów œwiata",
+    subtitle = "(punkty to poszczególne kraje)",
     x = NULL,
-    y = "DostÄ™p do internetu (% populacji)",
+    y = "Dostêp do internetu (% populacji)",
     fill = "Region"
   ) +
   theme_minimal() +
   theme(
     plot.title = element_text(face = "bold", size = 14),
     legend.position = "none")
-# 7. Wykres pudeÅ‚kowy (boxplot): przyrost populacji wedÅ‚ug regionÃ³w ----
-# (mediana, rozrzut i obserwacje odstajÄ…ce)
+# 7. Wykres pude³kowy (boxplot): przyrost populacji wed³ug regionów ----
+# (mediana, rozrzut i obserwacje odstaj¹ce)
 ggplot(kraje, aes(x = Region, y = Przyrost_populacji)) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   geom_boxplot(outlier.alpha = 0.3) +
   geom_jitter(width = 0.15, alpha = 0.5) +
   coord_flip() +
   labs(
-    title = "Tempo przyrostu populacji w regionach Å›wiata",
-    subtitle = "(punkty to poszczegÃ³lne kraje, linia przerywana = 0%)",
+    title = "Tempo przyrostu populacji w regionach œwiata",
+    subtitle = "(punkty to poszczególne kraje, linia przerywana = 0%)",
     x = "Region",
     y = "Przyrost populacji (%)"
   ) +
   theme_minimal() +
   theme(
     plot.title = element_text(face = "bold", size = 14))
+
+# EKSPORT -----------------------------------------------------------------
+
+
 # Zapisanie ramki danych do pliku CSV
 write.csv(kraje, "kraje_analiza.csv") 
 
@@ -456,9 +474,9 @@ write_xlsx(kraje, "kraje_wynik.xlsx")
 
 
 
-# Zapisz wszystkie wykresy â€“ prawe dolne okno, zakÅ‚adka Plots:
+# Zapisz wszystkie wykresy – prawe dolne okno, zak³adka Plots:
 # Export -> Save as image
 
-# Niestety kaÅ¼dy wykres trzeba zapisaÄ‡ rÄ™cznie
-# nie ma funkcji do masowego eksportu wykresÃ³w.
-
+# Niestety ka¿dy wykres trzeba zapisaæ rêcznie
+# nie ma funkcji do masowego eksportu wykresów.
+#install.packages("rmarkdown")
